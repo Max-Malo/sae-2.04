@@ -38,6 +38,8 @@ create table SERVICE			(
 								
 								constraint FK_SERVICE		foreign key (idHop ) references HOPITAL (idHop) ,
 								
+								constraint CK_SERVICE		check 		(nb_lits > 0) 
+								
 								) ;
 
 create table MEDECIN			( 
@@ -54,7 +56,11 @@ create table MEDECIN			(
 								
 								constraint FK_MEDECIN		foreign key (idHop ) references HOPITAL (idHop) ,
 								constraint FK_MEDECIN		foreign key (idServ) references SERVICE (idServ),
-								constraint FK_MEDECIN		foreign key (idLab ) references LABORATOIRE (idLab)
+								constraint FK_MEDECIN		foreign key (idLab ) references LABORATOIRE (idLab),
+								
+								constraint UNQ_MEDECIN		unique		(mail_mad) ,
+								
+								constraint CK_MEDECIN      	check		(fct IN ('CONSULTANT', 'CHERCHEUR', 'PRATICIEN'))
 								
 								) ;
 
