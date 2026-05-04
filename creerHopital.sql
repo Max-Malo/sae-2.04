@@ -1,59 +1,71 @@
-drop table if exists consulte;
-drop table if exists patient;
-drop table if exists medecin;
-drop table if exists service;
-drop table if exists laboratoire;
-drop table if exists hopital;
+drop table if exists HOPITAL 		cascade ;
+drop table if exists LABORATOIRE 	cascade ;
+drop table if exists SERVICE 		cascade ;
+drop table if exists MEDECIN 		cascade ;
+drop table if exists PATIENT 		cascade ;
+drop table if exists CONSULTE 		cascade ;
 
-create table hopital (
-    idhop int primary key,
-    nom_hop varchar(100) not null,
-    adresse_hop varchar(255),
-    tel_hop char(10)
-);
 
-create table laboratoire (
-    idlab int primary key,
-    nom_lab varchar(100) not null,
-    idhop int not null,
-    constraint fk_lab_hop foreign key (idhop) references hopital(idhop)
-);
 
-create table service (
-    idserv int primary key,
-    nom_serv varchar(100) not null,
-    nb_lits int check (nb_lits >= 0),
-    idhop int not null,
-    constraint fk_serv_hop foreign key (idhop) references hopital(idhop)
-);
+create table HOPITAL 			(
+								idHop   	int				not null ,
+								nom_hop 	varchar(50) 	not null ,
+								adresse_hop	varchar(50)		not null ,
+								tel_hop     int 			not null ,
+								
+								constraint PK_HOPITAL 		primary key ( idHop )
+								
+								) ;
 
-create table medecin (
-    idmed int primary key,
-    nom_med varchar(100) not null,
-    mail_med varchar(150) unique not null,
-    spec varchar(100),
-    fct varchar(20) check (fct in ('CONSULTANT', 'CHERCHEUR', 'PRATICIEN')),
-    idlab int,
-    idserv int,
-    idhop int not null,
-    constraint fk_med_lab foreign key (idlab) references laboratoire(idlab),
-    constraint fk_med_serv foreign key (idserv) references service(idserv),
-    constraint fk_med_hop foreign key (idhop) references hopital(idhop)
-);
+create table LABORATOIRE 		( 
+								idLab		int 			not null ,
+								nom_lab		varchar(50) 	not null ,
+								idHop		int 			not null ,
+								
+								constraint PK_LABORATOIRE 	primary key ( idLab )
+								
+							  	) ;
 
-create table patient (
-    idpat int primary key,
-    nom_pat varchar(100) not null,
-    prenom_pat varchar(100),
-    adresse_pat varchar(255),
-    date_nais date
-);
+create table SERVICE			(
+								idServ		int				not null ,
+								nom_serv	varchar(50) 	not null ,
+								nb_lits		int 			not null ,
+								idHop       int  			not null ,
+								
+								constraint PK_SERVICE		primary key ( idServ )
+								
+								) ;
 
-create table consulte (
-    idpat int,
-    idmed int,
-    date_consult timestamp,
-    primary key (idpat, idmed, date_consult),
-    constraint fk_cons_pat foreign key (idpat) references patient(idpat),
-    constraint fk_cons_med foreign key (idmed) references medecin(idmed)
-);
+create table MEDECIN			( 
+								idMed 		int 			not null ,
+								nom_med 	varchar(50) 	not null ,
+								mail_med	varchar(50)		not null ,
+								spec		varchar(50) 	not null ,
+								fct			varchar(50) 	not null ,
+								idLab		int				not null ,
+								idServ		int				not null ,
+								idHop		int				not null ,
+								
+								constraint PK_MEDECIN 		primary key ( idMEd )
+								
+								) ;
+
+create table PATIENT			(
+								idPat		int				not null ,
+								nom_pat		varchar(50) 	not null ,
+								prenom_pat	varchar(50) 	not null ,
+								adresse_pat	varchar(50)		not null ,
+								date_nais	date 			not null ,
+								
+								constraint PK_PATIENT		primary key ( idPat )
+								
+								) ;
+
+create table CONSULTE			(
+								idPat		int 			not null ,
+								idMed		int				not null ,
+								date_consult date			not null ,
+								
+								constraint PK_CONSULTE primary key ( idPat , idMed , date_consult )
+								
+								) ;
