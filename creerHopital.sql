@@ -24,6 +24,8 @@ create table LABORATOIRE 		(
 								
 								constraint PK_LABORATOIRE 	primary key ( idLab )
 								
+								constraint FK_LABORATOIRE	foreign key (idHop ) references HOPITAL (idHop) ,
+								
 							  	) ;
 
 create table SERVICE			(
@@ -33,6 +35,8 @@ create table SERVICE			(
 								idHop       int  			not null ,
 								
 								constraint PK_SERVICE		primary key ( idServ )
+								
+								constraint FK_SERVICE		foreign key (idHop ) references HOPITAL (idHop) ,
 								
 								) ;
 
@@ -46,7 +50,11 @@ create table MEDECIN			(
 								idServ		int				not null ,
 								idHop		int				not null ,
 								
-								constraint PK_MEDECIN 		primary key ( idMEd )
+								constraint PK_MEDECIN 		primary key ( idMEd ) ,
+								
+								constraint FK_MEDECIN		foreign key (idHop ) references HOPITAL (idHop) ,
+								constraint FK_MEDECIN		foreign key (idServ) references SERVICE (idServ),
+								constraint FK_MEDECIN		foreign key (idLab ) references LABORATOIRE (idLab)
 								
 								) ;
 
@@ -66,6 +74,9 @@ create table CONSULTE			(
 								idMed		int				not null ,
 								date_consult date			not null ,
 								
-								constraint PK_CONSULTE primary key ( idPat , idMed , date_consult )
+								constraint PK_CONSULTE 		primary key ( idPat , idMed , date_consult )
+								
+								constraint FK_CONSULTE 		foreign key ( idPat) references PATIENT (idPat) ,
+								constraint FK_CONSULTE 		foreign key ( idMed) references MEDECIN (idMed) ,								
 								
 								) ;
