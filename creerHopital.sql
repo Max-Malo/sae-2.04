@@ -22,9 +22,9 @@ create table LABORATOIRE 		(
 								nom_lab		varchar(50) 	not null ,
 								idHop		int 			not null ,
 								
-								constraint PK_LABORATOIRE 	primary key ( idLab )
+								constraint PK_LABORATOIRE 	primary key ( idLab ) ,
 								
-								constraint FK_LABORATOIRE	foreign key (idHop ) references HOPITAL (idHop) ,
+								constraint FK_LABORATOIRE	foreign key (idHop ) references HOPITAL (idHop) 
 								
 							  	) ;
 
@@ -34,7 +34,7 @@ create table SERVICE			(
 								nb_lits		int 			not null ,
 								idHop       int  			not null ,
 								
-								constraint PK_SERVICE		primary key ( idServ )
+								constraint PK_SERVICE		primary key ( idServ ) ,
 								
 								constraint FK_SERVICE		foreign key (idHop ) references HOPITAL (idHop) ,
 								
@@ -54,11 +54,11 @@ create table MEDECIN			(
 								
 								constraint PK_MEDECIN 		primary key ( idMEd ) ,
 								
-								constraint FK_MEDECIN		foreign key (idHop ) references HOPITAL (idHop) ,
-								constraint FK_MEDECIN		foreign key (idServ) references SERVICE (idServ),
-								constraint FK_MEDECIN		foreign key (idLab ) references LABORATOIRE (idLab),
+								constraint FK_MEDECIN_HOP	foreign key (idHop ) references HOPITAL (idHop) ,
+								constraint FK_MEDECIN_SERV	foreign key (idServ) references SERVICE (idServ),
+								constraint FK_MEDECIN_LAB	foreign key (idLab ) references LABORATOIRE (idLab),
 								
-								constraint UNQ_MEDECIN		unique		(mail_mad) ,
+								constraint UNQ_MEDECIN		unique		(mail_med) ,
 								
 								constraint CK_MEDECIN      	check		(fct IN ('CONSULTANT', 'CHERCHEUR', 'PRATICIEN'))
 								
@@ -80,9 +80,9 @@ create table CONSULTE			(
 								idMed		int				not null ,
 								date_consult date			not null ,
 								
-								constraint PK_CONSULTE 		primary key ( idPat , idMed , date_consult )
+								constraint PK_CONSULTE 		primary key ( idPat , idMed , date_consult ) ,
 								
-								constraint FK_CONSULTE 		foreign key ( idPat) references PATIENT (idPat) ,
-								constraint FK_CONSULTE 		foreign key ( idMed) references MEDECIN (idMed) ,								
+								constraint FK_CONSULTE_PAT 		foreign key ( idPat) references PATIENT (idPat) ,
+								constraint FK_CONSULTE_MED		foreign key ( idMed) references MEDECIN (idMed) 							
 								
 								) ;
