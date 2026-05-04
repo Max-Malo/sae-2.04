@@ -3,4 +3,4 @@ select		serv.nom_serv
 
 from		service as serv
 
-where		serv.nb_lits >= 100;
+where		serv.nb_lits > 100;
