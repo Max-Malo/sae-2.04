@@ -1,0 +1,1 @@
+/* 2. Utiliser cette vue pour afficher les médecins chercheurs de l'hôpital Jacques Monod. */

@@ -1,0 +1,1 @@
+/* 5. Écrire une requête qui donne la liste des consultations (nom du médecin, nom du patient) des patients de plus de 40 ans. Utiliser la fonction age_patient */
