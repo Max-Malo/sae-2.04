@@ -10,4 +10,6 @@ select  m.nom_med  ,
 
 from    MEDECIN as m 
         inner join 
-        HOPITAL as h on h.idHop = m.idHop ;
+        HOPITAL as h on h.idHop = m.idHop
+
+where   m.fct = 'chercheur' ;
