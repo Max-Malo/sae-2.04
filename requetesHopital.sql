@@ -155,8 +155,8 @@ having		sum(serv.nb_lits) > 300;
 
 
 /*11. Les patients ayant consulté dans plusieurs hôpitaux*/
-select		pat.nom_pat, 
-		pat.prenom_pat
+select			pat.nom_pat, 
+				pat.prenom_pat
 
 from        	PATIENT  as pat
 				inner join 
@@ -170,12 +170,12 @@ having      	count(distinct med.idhop) > 1;
 
 
 /*12. Le nombre de lits par type de service pour l'ensemble des hôpitaux*/
-select      serv.nom_serv, 
-			sum(serv.nb_lits) as total_lits
+select     	 	serv.nom_serv, 
+				sum(serv.nb_lits) as total_lits
 
-from        SERVICE as serv
+from        	SERVICE as serv
 
-group by    serv.nom_serv;
+group by    	serv.nom_serv;
 
 
 /*13. Liste des noms des médecins et du nombre de patients examinés par médecin. La liste est triée
