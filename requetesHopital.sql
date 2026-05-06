@@ -1,251 +1,271 @@
-/* partie C */
+-------------------------------------------------------
+-- BASLEY 	Max-Malo 	C1
+-- COFFARD 	Alexis 		C1
+-- LARBI 	Timothé 	C2
+-------------------------------------------------------
+-- script requetesHopital.sql
+-- connexion a postgresql:    	psql 
+-- execution du script:		=>\i requetesHopital.sql
+-- verif:			=>\dt
+-------------------------------------------------------
 
-/*Les noms des services ayant plus de 100 lits.*/
+/* Partie C */
+
+/*1. Les noms des services ayant plus de 100 lits.*/
 select		serv.nom_serv
 
-from		service as serv
+from		SERVICE as serv
 
 where		serv.nb_lits > 100;
 
-/*Noms des hôpitaux qui ont un service de Cardiologie.*/
+
+/*2. Noms des hôpitaux qui ont un service de Cardiologie.*/
 select		hop.nom_hop
 
-from		hopital as hop
+from		HOPITAL as hop
 			inner join
-			service as serv on serv.idhop = hop.idhop
+			SERVICE as serv on serv.idhop = hop.idhop
 
 where		serv.nom_serv like 'Cardiologie';
 
-/*Les noms des laboratoires de l’hôpital Jacques Monod.*/
+
+/*3. Les noms des laboratoires de l’hôpital Jacques Monod.*/
 select		lab.nom_lab
 
-from		laboratoire as lab
+from		LABORATOIRE as lab
 			inner join
-			hopital		as hop on hop.idhop = lab.idhop
+			HOPITAL	    as hop on hop.idhop = lab.idhop
 
 where		hop.nom_hop like 'Jacques Monod';
 
-/*Noms des patients ayant consulté un gynécologue*/
+
+/*4. Noms des patients ayant consulté un gynécologue*/
 select		pat.nom_pat
 
-from		patient  as pat
+from		PATIENT  as pat
 			inner join
-			consulte as consulte on consulte.idpat = pat.idpat
+			CONSULTE as cons on cons.idpat = pat.idpat
 			inner join
-			medecin  as med 	 on med.idmed = consulte.idmed
+			MEDECIN  as med  on med.idmed = cons.idmed
 
 where		med.spec like 'Gynécologue';
 
-/*Liste des consultations de médecins (nom du médecin, nom du patient et la date de
+
+/*5. Liste des consultations de médecins (nom du médecin, nom du patient et la date de
 consultation)*/
 select		med.nom_med,
 
 			pat.nom_pat,
 
-			consulte.date_consult
+			cons.date_consult
 
-from		patient  as pat
+from		PATIENT  as pat
 			inner join
-			consulte as consulte on consulte.idpat = pat.idpat
+			CONSULTE as cons on cons.idpat = pat.idpat
 			inner join
-			medecin  as med 	 on med.idmed = consulte.idmed;
+			MEDECIN  as med  on med.idmed = cons.idmed;
 
 
-/*Noms des patients ayant consulté un médecin consultant indépendant à l'hôpital Jacques
+/*6. Noms des patients ayant consulté un médecin consultant indépendant à l'hôpital Jacques
 Monod*/
 select		pat.nom_pat
 
-from		patient  as pat
+from		PATIENT  as pat
 			inner join
-			consulte as consulte on consulte.idpat = pat.idpat
+			CONSULTE as cons on cons.idpat = pat.idpat
 			inner join
-			medecin  as med 	 on med.idmed	   = consulte.idmed
+			MEDECIN  as med  on med.idmed  = cons.idmed
 			inner join
-			hopital  as hop		 on hop.idhop 	   = med.idhop
+			HOPITAL  as hop	 on hop.idhop  = med.idhop
 
 where		hop.nom_hop like 'Jacques Monod' and
-			med.fct like 'CONSULTANT'		 ;/*indépendant ????*/*
+
+			med.fct     like 'CONSULTANT'		 ;/*indépendant ????*/
 
 
-/*Noms des patients n'ayant consulté qu'à l'hôpital Jacques Monod*/
+/*7. Noms des patients n'ayant consulté qu'à l'hôpital Jacques Monod*/
 select distinct	pat.nom_pat
 
-from			patient  as pat
+from			PATIENT  as pat
 				inner join 
-				consulte as consulte on pat.idpat 	    = consulte.idpat
+				CONSULTE as cons on pat.idpat 	= cons.idpat
 				inner join 
-				medecin  as med 	 on consulte.idmed  = med.idmed
+				MEDECIN  as med  on cons.idmed  = med.idmed
 				inner join 
-				hopital  as hop 	 on med.idhop 		= hop.idhop
+				HOPITAL  as hop  on med.idhop   = hop.idhop
 
 where			hop.nom_hop = 'Jacques Monod' and
-				pat.idpat not in (
-					select		consulte2.idpat
+				pat.idpat not in ( 	select	CONSULTE2.idpat
 					
-					from		consulte as consulte2
-								inner join 
-								medecin as med2 on consulte2.idmed = med2.idmed
-								inner join 
-								hopital as hop2 on med2.idhop = hop2.idhop
+					   				from		CONSULTE as cons2
+												inner join 
+												MEDECIN  as med2 on cons2.idmed = med2.idmed
+												inner join 
+												HOPITAL  as hop2 on med2.idhop = hop2.idhop
 
-					where		hop2.nom_hop != 'Jacques Monod'
-				);
+					   				where	hop2.nom_hop != 'Jacques Monod' );
+				
 
-/*Liste des noms des médecins de la même spécialité que le médecin Firmin, cette liste est triée
+/*8. Liste des noms des médecins de la même spécialité que le médecin Firmin, cette liste est triée
 par ordre alphabétique*/
 select		med.nom_med
 
-from		medecin as med
+from		MEDECIN as med
 
-where		med.spec like (
-					select		med2.spec
+where		med.spec like ( select		med2.spec
 
-					from		medecin as med2
+							from		MEDECIN as med2
 
-					where		nom_med = 'Firmin'
-			);
+							where		nom_med = 'Firmin' )
 
-/*Les noms des hôpitaux avec un service de Cardiologie de capacité supérieure au service de
+order by	med.nom_med;
+
+
+/*9. Les noms des hôpitaux avec un service de Cardiologie de capacité supérieure au service de
 Cardiologie de l'hôpital Jacques Monod*/
 select		hop.nom_hop
 
-from		hopital as hop
+from		HOPITAL as hop
 			inner join
-			service as serv on serv.idhop = hop.idhop
+			SERVICE as serv on serv.idhop = hop.idhop
 
-where		serv.nom_serv = 'Cardiologie' and
-			serv.nb_lits > (
-					select		serv2.nb_lits
+where		serv.nom_serv = 'Cardiologie' 	and
 
-					from		service as serv2
-								inner join
-								hopital as hop2 on hop2.idhop = serv2.idhop
+			serv.nb_lits > ( select		serv2.nb_lits
 
-					where		nom_hop = 'Jacques Monod' and
-								serv2.nom_serv = 'Cardiologie'
-			);
+						 	 from		SERVICE as serv2
+										inner join
+										HOPITAL as hop2 on hop2.idhop = serv2.idhop
 
-/*Les hôpitaux ayant plus de 300 lits*/
+							 where		nom_hop = 'Jacques Monod' 	and
+				 
+										serv2.nom_serv = 'Cardiologie' );
+			
+
+/*10. Les hôpitaux ayant plus de 300 lits*/
 select		hop.nom_hop
 
-from		hopital as hop
-			inner join service as serv on hop.idhop = serv.idhop
+from		HOPITAL as hop
+			inner join 
+			SERVICE as serv on hop.idhop = serv.idhop
 
 group by	hop.nom_hop
 
 having		sum(serv.nb_lits) > 300;
 
-/*Les patients ayant consulté dans plusieurs hôpitaux*/
-select      pat.nom_pat, 
-			pat.prenom_pat
 
-from        patient  as pat
-			inner join 
-			consulte as consulte on pat.idpat 	   = consulte.idpat
-			inner join 
-			medecin  as med 	 on consulte.idmed = med.idmed
+/*11. Les patients ayant consulté dans plusieurs hôpitaux*/
+select		pat.nom_pat, 
+		pat.prenom_pat
 
-group by    pat.nom_pat, pat.prenom_pat
+from        	PATIENT  as pat
+				inner join 
+				CONSULTE as cons on pat.idpat  = cons.idpat
+				inner join 
+				MEDECIN  as med  on cons.idmed = med.idmed
 
-having      count(distinct med.idhop) > 1;
+group by    	pat.nom_pat, pat.prenom_pat
 
-/*Le nombre de lits par type de service pour l'ensemble des hôpitaux*/
+having      	count(distinct med.idhop) > 1;
+
+
+/*12. Le nombre de lits par type de service pour l'ensemble des hôpitaux*/
 select      serv.nom_serv, 
 			sum(serv.nb_lits) as total_lits
 
-from        service as serv
+from        SERVICE as serv
 
 group by    serv.nom_serv;
 
-/*Liste des noms des médecins et du nombre de patients examinés par médecin. La liste est triée
+
+/*13. Liste des noms des médecins et du nombre de patients examinés par médecin. La liste est triée
 par ordre décroissant du nombre de patients*/
-select      med.nom_med, 
-			count(distinct consulte.idpat) as nombre_patients
+select      	med.nom_med, 
+		
+				count(distinct cons.idpat) as nombre_patients
 
-from        medecin  as med
-			inner join 
-			consulte as consulte on med.idmed = consulte.idmed
+from        	MEDECIN  as med
+				inner join 
+				CONSULTE as cons on med.idmed = cons.idmed
 
-group by    med.idmed, 
-			med.nom_med
+group by    	med.idmed, 
+				med.nom_med
 
-order by    nombre_patients desc;
+order by    	nombre_patients desc;
 
-/*Les noms des médecins ayant plus de patients que le médecin Firmin*/
-select      med.nom_med
 
-from        medecin  as med
-			inner join 
-			consulte as consulte on med.idmed = consulte.idmed
+/*14. Les noms des médecins ayant plus de patients que le médecin Firmin*/
+select      	med.nom_med
 
-group by    med.nom_med
+from        	MEDECIN  as med
+				inner join 
+				CONSULTE as cons on med.idmed = cons.idmed
 
-having      count(distinct consulte.idpat) > (
-				select      count(distinct consulte2.idpat)
+group by    	med.nom_med
+
+having      	count(distinct cons.idpat) > ( 	select      count(distinct cons2.idpat)
 				
-				from        consulte as consulte2
-							inner join 
-							medecin  as med2 on consulte2.idmed = med2.idmed
+												from       	CONSULTE as cons2
+															inner join 
+															MEDECIN  as med2 on cons2.idmed = med2.idmed
 				
-				where       med2.nom_med = 'Firmin'
-			);
+												where       med2.nom_med = 'Firmin' );
+			
 
-/*Les patients ayant fréquenté tous les services de l'hôpital Jacques Monod*/
-select      pat.nom_pat,
-            pat.prenom_pat
+/*15. Les patients ayant fréquenté tous les services de l'hôpital Jacques Monod*/
+select      	pat.nom_pat,
+            	pat.prenom_pat
 
-from        patient as pat
-            inner join 
-			consulte as consulte on pat.idpat 		  = consulte.idpat
-            inner join 
-			medecin  as med 		on consulte.idmed = med.idmed
-            inner join 
-			hopital  as hop 		on med.idhop 	  = hop.idhop
+from        	PATIENT as pat
+            	inner join 
+				CONSULTE as cons on pat.idpat  = cons.idpat
+            	inner join 
+				MEDECIN  as med  on cons.idmed = med.idmed
+            	inner join 
+				HOPITAL  as hop  on med.idhop  = hop.idhop
 
-where       hop.nom_hop = 'Jacques Monod' and
-            med.idserv is not null
+where       	hop.nom_hop = 'Jacques Monod' and
 
-group by    pat.nom_pat, pat.prenom_pat
+            	med.idserv is not null
 
-having      count(distinct med.idserv) = (
-                select      count(*)
+group by   		pat.nom_pat, pat.prenom_pat
+
+having      	count(distinct med.idserv) = ( 	select      	count(*)
                 
-                from        service as serv
-                            inner join 
-							hopital as hop2 on serv.idhop = hop2.idhop
+                								from        	SERVICE as serv
+                            									inner join 
+																HOPITAL as hop2 on serv.idhop = hop2.idhop
                 
-                where       hop2.nom_hop = 'Jacques Monod'
-            );
+                								where       hop2.nom_hop = 'Jacques Monod' );
+            
 
-/*Les hôpitaux ayant les mêmes laboratoires que l'hôpital Jacques Monod*/
-select      hop.nom_hop
+/*16. Les hôpitaux ayant les mêmes laboratoires que l'hôpital Jacques Monod*/
 
-from        hopital as hop
-            inner join 
-			laboratoire as lab on hop.idhop = lab.idhop
+select			hop.nom_hop
 
-where       hop.nom_hop != 'Jacques Monod' and
-            lab.nom_lab in (
-                select      lab2.nom_lab
+from        	HOPITAL as hop
+            	inner join 
+				LABORATOIRE as lab on hop.idhop = lab.idhop
+
+where       	hop.nom_hop != 'Jacques Monod' and
+            	lab.nom_lab in (select      	lab2.nom_lab
                 
-                from        laboratoire as lab2
-                            inner join 
-							hopital as hop2 on lab2.idhop = hop2.idhop
+                				from        	LABORATOIRE as lab2
+                            					inner join 
+												HOPITAL as hop2 on lab2.idhop = hop2.idhop
                 
-                where       hop2.nom_hop = 'Jacques Monod'
-            )
+               					where       hop2.nom_hop = 'Jacques Monod' )
 
-group by    hop.nom_hop
+group by    	hop.nom_hop
 
-having      count(distinct lab.nom_lab) = (
-                select      count(*)
+having      	count(distinct lab.nom_lab) = ( select      	count(*)
                 
-                from        laboratoire as lab3
-                            inner join 
-							hopital as hop3 on lab3.idhop = hop3.idhop
+                								from        	LABORATOIRE as lab3
+                            									inner join 
+																HOPITAL as hop3 on lab3.idhop = hop3.idhop
                 
-                where       hop3.nom_hop = 'Jacques Monod'
-            );
+                								where       hop3.nom_hop = 'Jacques Monod' );
+            
 
 /* Partie D */
 
@@ -253,36 +273,36 @@ having      count(distinct lab.nom_lab) = (
 
 create view medecin_chercheur as 
 
-select  m.nom_med  ,
-        m.mail_med ,
-        m.spec     ,
+select  	med.nom_med  ,
+        	med.mail_med ,
+        	med.spec     ,
 
-        h.nom_hop  
+        	hop.nom_hop  
 
-from    MEDECIN as m 
-        inner join 
-        HOPITAL as h on h.idHop = m.idHop
+from    	MEDECIN as m ed
+        	inner join 
+        	HOPITAL as hop on hop.idHop = med.idHop
 
-where   m.fct = 'chercheur' ;
+where   	med.fct = 'CHERCHEUR' ;
 
 /* 2. Utiliser cette vue pour afficher les médecins chercheurs de l'hôpital Jacques Monod. */
 
-select *
+select 		*
 
-from   medecin_chercheur 
+from   		medecin_chercheur 
 
-where  nom_hop = 'Jacques Monod' ;
+where  		nom_hop = 'Jacques Monod' ;
 
 /* 3. Créer une vue contenant les premières consultations des patients (idPat, premiere_date) */
 
 create view prem_consulte_patient as
 
-select c.idPat ,
-       c.MIN(date_consult) as premiere_date
+select 		cons.idPat ,
+       		MIN(date_consult) 	  as premiere_date
 
-from   consulte as c 
+from   		CONSULTE 	  		  as cons
 
-group by c.idPat;
+group by 	cons.idPat;
 
 /* 4. Utiliser cette vue pour écrire une fonction age_patient qui admet comme paramètre l’identifiant du patient 
 et qui retourne l’âge du patient à sa première consultation */
@@ -295,25 +315,29 @@ declare
     v_age int ;
 begin
 
-    select  EXTRACT (YEAR FROM v.premiere_date) - EXTRACT(YEAR FROM p.date_nais)
-    into v_age
+    select  	EXTRACT (YEAR from v.premiere_date) - EXTRACT(YEAR from p.date_nais) into v_age
 
-    from    patient p
-    join    prem_consulte_patient v ON p.idPat = v.idPat
+    from		PATIENT 	      	  as pat
+    			inner join    
+    			prem_consulte_patient as v on pat.idPat = v.idPat
 
-    where   p.idPat = id_recherche;
+    where   	pat.idPat = id_recherche;
 
-    RETURN v_age;
+    return v_age;
 end ;
-$$ LANGUAGE plpgsql;
+$$ language plpgsql;
 
 /* 5. Écrire une requête qui donne la liste des consultations 
 (nom du médecin, nom du patient) des patients de plus de 40 ans. 
 Utiliser la fonction age_patient */
 
-select m.nom_med, 
-       p.nom_pat
-from   consulte c
-join   medecin m on c.idmed = m.idmed
-join   patient p on c.idpat = p.idpat
-where  age_patient(p.idpat) > 40;
+select 		med.nom_med, 
+       		pat.nom_pat
+       		
+from   		CONSULTE as cons
+			inner join   
+			MEDECIN  as med 	on cons.idmed = med.idmed
+			inner join   
+			PATIENT  as pat 	on cons.idpat = pat.idpat
+		
+where  		age_patient(pat.idpat) > 40;
